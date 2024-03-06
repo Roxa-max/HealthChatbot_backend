@@ -18,7 +18,7 @@ headers = {
 
 @router.post("/start_conversation")
 def start_conversation():
-    response = requests.post(f'{BASE_URL}/conversations', headers=headers)
+    response = requests.post(f'{BASE_URL}/conversations', headers=headers, timeout=60)
     return response.json()["conversationId"]
 
 @router.post("/send_message/{conversation_id}")
@@ -30,11 +30,11 @@ def send_message(conversation_id: str, message: MessageSchema):
         },
         "text": message.message
     }
-    response = requests.post(f'{BASE_URL}/conversations/{conversation_id}/activities', headers=headers, data=json.dumps(data))
-    response = requests.get(f'{BASE_URL}/conversations/{conversation_id}/activities', headers=headers)
+    response = requests.post(f'{BASE_URL}/conversations/{conversation_id}/activities', headers=headers, data=json.dumps(data), timeout=60)
+    response = requests.get(f'{BASE_URL}/conversations/{conversation_id}/activities', headers=headers, timeout=60)
     return response.json()["activities"][-1]["text"]
 
 @router.get("/receive_message/{conversation_id}")
 def receive_message(conversation_id: str):
-    response = requests.get(f'{BASE_URL}/conversations/{conversation_id}/activities', headers=headers)    
+    response = requests.get(f'{BASE_URL}/conversations/{conversation_id}/activities', headers=headers, timeout=60)    
     return response.json()["activities"][-1]["text"]
